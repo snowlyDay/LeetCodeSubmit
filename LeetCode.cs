@@ -1,41 +1,14 @@
 public class Solution {
-    public int RomanToInt(string s) {
-        Dictionary<char, int> roman = new Dictionary<char, int>();
-        roman.Add('I', 1);
-        roman.Add('V', 5);
-        roman.Add('X', 10);
-        roman.Add('L', 50);
-        roman.Add('C', 100);
-        roman.Add('D', 500);
-        roman.Add('M', 1000);
-
-        Queue queue = new Queue();
-        int result = 0;
-        foreach (var item in s)
-        {
-            queue.Enqueue(roman[item]);
-        }
-        while(queue.Count >0)
-        {
-            int current = (int)queue.Dequeue();
-            if (queue.Count > 0)
-            {
-                int next = (int)queue.Peek();
-                if (current < next)
-                {
-                    result += next - current;
-                    queue.Dequeue();
-                }
-                else
-                {
-                    result += current;
-                }
-            }
-            else
-            {
-                result += current;
+    public string LongestCommonPrefix(string[] strs) {
+        if (strs.Length == 0) return "";
+        if (strs.Length == 1) return strs[0];
+        string prefix = strs[0];
+        for (int i = 1; i < strs.Length; i++) {
+            while (strs[i].IndexOf(prefix) != 0) {
+                prefix = prefix.Substring(0, prefix.Length - 1);
+                if (prefix == "") return "";
             }
         }
-        return result;
+        return prefix;
     }
 }
