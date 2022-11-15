@@ -9,16 +9,31 @@ public class Solution {
         roman.Add('D', 500);
         roman.Add('M', 1000);
 
+        Queue queue = new Queue();
         int result = 0;
-        for (int i = 0; i < s.Length; i++)
+        foreach (var item in s)
         {
-            if (i < s.Length - 1 && roman[s[i]] < roman[s[i + 1]])
+            queue.Enqueue(roman[item]);
+        }
+        while(queue.Count >0)
+        {
+            int current = (int)queue.Dequeue();
+            if (queue.Count > 0)
             {
-                result -= roman[s[i]];
+                int next = (int)queue.Peek();
+                if (current < next)
+                {
+                    result += next - current;
+                    queue.Dequeue();
+                }
+                else
+                {
+                    result += current;
+                }
             }
             else
             {
-                result += roman[s[i]];
+                result += current;
             }
         }
         return result;
