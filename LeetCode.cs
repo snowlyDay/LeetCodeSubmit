@@ -1,14 +1,20 @@
 public class Solution {
-    public string LongestCommonPrefix(string[] strs) {
-        if (strs.Length == 0) return "";
-        if (strs.Length == 1) return strs[0];
-        string prefix = strs[0];
-        for (int i = 1; i < strs.Length; i++) {
-            while (strs[i].IndexOf(prefix) != 0) {
-                prefix = prefix.Substring(0, prefix.Length - 1);
-                if (prefix == "") return "";
+    public string Multiply(string num1, string num2) {
+        if (num1 == "0" || num2 == "0") return "0";
+        int[] result = new int[num1.Length + num2.Length];
+        for (int i = num1.Length - 1; i >= 0; i--) {
+            for (int j = num2.Length - 1; j >= 0; j--) {
+                int mul = (num1[i] - '0') * (num2[j] - '0');
+                int p1 = i + j, p2 = i + j + 1;
+                int sum = mul + result[p2];
+                result[p1] += sum / 10;
+                result[p2] = sum % 10;
             }
         }
-        return prefix;
+        StringBuilder sb = new StringBuilder();
+        foreach (int i in result) {
+            if (!(sb.Length == 0 && i == 0)) sb.Append(i);
+        }
+        return sb.ToString();
     }
 }
