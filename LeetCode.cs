@@ -1,20 +1,49 @@
-public class Solution {
-    public string Multiply(string num1, string num2) {
-        if (num1 == "0" || num2 == "0") return "0";
-        int[] result = new int[num1.Length + num2.Length];
-        for (int i = num1.Length - 1; i >= 0; i--) {
-            for (int j = num2.Length - 1; j >= 0; j--) {
-                int mul = (num1[i] - '0') * (num2[j] - '0');
-                int p1 = i + j, p2 = i + j + 1;
-                int sum = mul + result[p2];
-                result[p1] += sum / 10;
-                result[p2] = sum % 10;
+private void OnPostprocessModel(GameObject g)
+{
+    var expectedMaterial = AssetDatabase.LoadAssetAtPath<Material>("Assets/custom_m.mat");
+    using (var so = new SerializedObject(assetImporter))
+    {
+        var materials = so.FindProperty("m_Materials");
+        var externalObjects = so.FindProperty("m_ExternalObjects");
+
+        for (int materialIndex = 0; materialIndex < materials.arraySize; materialIndex ++)
+        {
+            var id = materials.GetArrayElementAtIndex(materialIndex);
+            var name = id.FindPropertyRelative("name").stringValue;
+            var type = id.FindPropertyRelative("type").stringValue;
+            var assembly = id.FindPropertyRelative("assembly").stringValue;
+
+            SerializedProperty materialProperty = null;
+
+            for (int externalObjectIndex = 0; externalObjectIndex < externalObjects.arraySize; externalObjectIndex ++)
+            {
+                var currentSerializedProperty = externalObjects.GetArrayElementAtIndex(externalObjectIndex);
+                var externalName = currentSerializedProperty.FindPropertyRelative("first.name").stringValue;
+                var externalType = currentSerializedProperty.FindPropertyRelative("first.type").stringValue;
+
+                if (externalType == type && externalName == name)
+                {
+                    materialProperty = currentSerializedProperty.FindPropertyRelative("second");
+                    break;
+                }
+            }
+
+            if (materialProperty == null)
+            {
+                var lastIndex = externalObjects.arraySize++;
+                var currentSerializedProperty = externalObjects.GetArrayElementAtIndex(lastIndex);
+                currentSerializedProperty.FindPropertyRelative("first.name").stringValue = name;
+                currentSerializedProperty.FindPropertyRelative("first.type").stringValue = type;
+                currentSerializedProperty.FindPropertyRelative("first.assembly").stringValue = assembly;
+                currentSerializedProperty.FindPropertyRelative("second").objectReferenceValue = expectedMaterial;
+            }
+            else
+            {
+                materialProperty.objectReferenceValue = expectedMaterial;
             }
         }
-        StringBuilder sb = new StringBuilder();
-        foreach (int i in result) {
-            if (!(sb.Length == 0 && i == 0)) sb.Append(i);
-        }
-        return sb.ToString();
+
+        so.ApplyModifiedPropertiesWithoutUndo();
     }
+    assetImporter.SaveAndReimport();
 }
