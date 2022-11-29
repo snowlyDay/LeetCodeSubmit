@@ -1,20 +1,34 @@
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     public int val;
+ *     public ListNode next;
+ *     public ListNode(int val=0, ListNode next=null) {
+ *         this.val = val;
+ *         this.next = next;
+ *     }
+ * }
+ */
 public class Solution {
-    public string CountAndSay(int n) {
-        if (n == 1) return "1";
-        var prev = CountAndSay(n - 1);
-        var sb = new StringBuilder();
-        var count = 1;
-        for (var i = 1; i < prev.Length; i++) {
-            if (prev[i] == prev[i - 1]) {
-                count++;
+    public ListNode MergeTwoLists(ListNode list1, ListNode list2) {
+        if (list1 == null) return list2;
+        if (list2 == null) return list1;
+    
+        ListNode head = new ListNode();
+        ListNode current = head;
+        while (list1 != null && list2 != null) {
+            if (list1.val < list2.val) {
+                current.next = list1;
+                list1 = list1.next;
             } else {
-                sb.Append(count);
-                sb.Append(prev[i - 1]);
-                count = 1;
+                current.next = list2;
+                list2 = list2.next;
             }
+            current = current.next;
         }
-        sb.Append(count);
-        sb.Append(prev[prev.Length - 1]);
-        return sb.ToString();
+        if (list1 != null) current.next = list1;
+        if (list2 != null) current.next = list2;
+        return head.next;
+
     }
 }
